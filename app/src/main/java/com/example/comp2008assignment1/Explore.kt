@@ -52,28 +52,14 @@ class Explore : AppCompatActivity() {
         }
         recyclerView.adapter = adapter
 
-        // Example park data
-        val sampleParks = listOf(
-            Park(
-                name = "Kings Park",
-                location = "Perth, WA",
-                activities = listOf("Walking", "Picnics", "Botanic Gardens"),
-                features = listOf("Playground", "Lookout", "Cafe")
-            ),
-            Park(
-                name = "Hyde Park",
-                location = "Sydney, NSW",
-                activities = listOf("Jogging", "Relaxing"),
-                features = listOf("Fountain", "Historic Trees")
-            ),
-            Park(
-                name = "Centenary Park",
-                location = "Melbourne, VIC",
-                activities = emptyList(),
-                features = listOf("Dog-friendly", "BBQ area")
-            )
-        )
 
-        adapter.setItems(sampleParks) // show them
+        val allParks = ParkRepository.getAll()
+        val favs = FavouriteStore.getFavourites(this)
+        val parksWithFavs = allParks.map { it.copy(isFavourite = favs.contains(it.parkID)) }
+        adapter.setItems(parksWithFavs)
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 }

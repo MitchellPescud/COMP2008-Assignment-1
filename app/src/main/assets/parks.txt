@@ -1,0 +1,20 @@
+kings_park|Kings Park|Perth, WA|Walking,Picnics,Botanic Gardens|Playground,Lookout,Cafe
+hyde_park|Hyde Park|Sydney, NSW|Jogging,Relaxing|Fountain,Historic Trees
+centenary_park|Centenary Park|Melbourne, VIC|Cycling,Running|Dog-friendly,BBQ area
+southbank_parklands|South Bank Parklands|Brisbane, QLD|Swimming,Markets,Dining|Beach,Lagoon,Wheel
+botanic_gardens_adelaide|Adelaide Botanic Gardens|Adelaide, SA|Strolling,Photography|Glasshouse,Cafe,Lake
+launceston_city_park|Launceston City Park|Launceston, TAS|Picnics,Events|Monkey Enclosure,Fountain
+darwin_waterfront|Darwin Waterfront Park|Darwin, NT|Swimming,Walking|Wave Pool,Shops,Restaurants
+flinders_park|Flinders Park|Geelong, VIC|Jogging,Picnics|Playground,Basketball Court
+lake_mongers_park|Lake Monger Reserve|Perth, WA|Cycling,Birdwatching|Lake,Boardwalks
+albert_park|Albert Park|Melbourne, VIC|Running,Cycling|Lake,Boating,F1 Circuit
+new_farm_park|New Farm Park|Brisbane, QLD|Walking,Gardening|Rose Gardens,Playground
+royal_botanic_gardens_sydney|Royal Botanic Gardens|Sydney, NSW|Guided Tours,Picnics|Harbour Views,Tropical Centre
+st_kilda_foreshore|St Kilda Foreshore|Melbourne, VIC|Swimming,Skating|Beach,Pier,Amusement Rides
+queens_gardens|Queens Gardens|Townsville, QLD|Jogging,Photography|Fountains,Tropical Plants
+riverway_park|Riverway Park|Townsville, QLD|Walking,Events|Swimming Lagoon,Art Centre
+parramatta_park|Parramatta Park|Parramatta, NSW|Running,Markets|Historic Sites,Playgrounds
+royal_tasmanian_botanical|Royal Tasmanian Botanical Gardens|Hobart, TAS|Tours,Photography|Conservatory,Japanese Garden
+bibra_lake_reserve|Bibra Lake Reserve|Perth, WA|Walking,Birdwatching|BBQ,Parks,Playground
+lake_burley_griffin|Lake Burley Griffin Park|Canberra, ACT|Rowing,Cycling,Walking|Lake,Fountains
+geraldton_foreshore|Geraldton Foreshore|Geraldton, WA|Swimming,Skating|Beach,Cafes,Playground

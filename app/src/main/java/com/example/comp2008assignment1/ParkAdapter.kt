@@ -43,6 +43,8 @@ class ParkAdapter(
         }
     }
 
+    fun currentItems(): List<Park> = items // handy for Favourites screen, if needed
+
     class ParkViewHolder(
         itemView: View,
         private val onFavouriteClick: (Park) -> Unit
@@ -55,35 +57,37 @@ class ParkAdapter(
         private val favourite: ImageButton = itemView.findViewById(R.id.btnFavourite)
 
         fun bind(park: Park) {
+            val ctx = itemView.context
+
+            // Re-sync in-memory flag from persisted store (covers orientation/app restart)
+            park.isFavourite = FavouriteStore.isFavourite(ctx, park.parkID)
+
             name.text = park.name
             location.text = park.location
 
-            // Activities
             val act = park.activities.filter { it.isNotBlank() }.joinToString(" • ")
             activities.visibility = if (act.isBlank()) View.GONE else View.VISIBLE
             activities.text = if (act.isNotBlank()) "Activities: $act" else ""
 
-            // Features
             val feat = park.features.filter { it.isNotBlank() }.joinToString(" • ")
             features.visibility = if (feat.isBlank()) View.GONE else View.VISIBLE
             features.text = if (feat.isNotBlank()) "Features: $feat" else ""
 
-            // Set correct icon
             favourite.setImageResource(
                 if (park.isFavourite) R.drawable.favourited_button_icon
                 else R.drawable.favourite_button_icon
             )
 
-            // Handle click
             favourite.setOnClickListener {
                 park.isFavourite = !park.isFavourite
-                onFavouriteClick(park)
-
+                // Persist the change
+                FavouriteStore.toggleFavourite(ctx, park.parkID, park.isFavourite)
                 // Update icon immediately
                 favourite.setImageResource(
                     if (park.isFavourite) R.drawable.favourited_button_icon
                     else R.drawable.favourite_button_icon
                 )
+                onFavouriteClick(park)
             }
         }
     }
