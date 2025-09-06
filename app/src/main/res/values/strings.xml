@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">COMP2008 Assignment 1</string>
+    <string name="welcome_photo">Welcome Photo</string>
+    <string name="Title">Parks List AU</string>
+    <string name="Welcome_Paragraph">Welcome to Parks List AU! Explore beautiful parks across the country and discover new places to relax, walk, and enjoy nature.</string>
 </resources>

@@ -1,9 +1,26 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.COMP2008Assignment1" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Light theme -->
+    <style name="Base.Theme.COMP2008Assignment1" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Optional: use Android 12+ dynamic colour -->
+        <!-- <item name="material3DynamicColor">true</item> -->
+
+        <!-- Brand colours (Light) -->
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+        <item name="android:colorBackground">@color/md_theme_light_background</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
+
+        <!-- System bars -->
+        <item name="android:statusBarColor">@color/md_theme_light_primary</item>
+        <item name="android:navigationBarColor">@color/md_theme_light_surface</item>
     </style>
 
-    <style name="Theme.COMP2008Assignment1" parent="Base.Theme.COMP2008Assignment1" />
+    <!-- Public theme alias -->
+    <style name="Theme.COMP2008Assignment1" parent="Base.Theme.COMP2008Assignment1"/>
 </resources>
