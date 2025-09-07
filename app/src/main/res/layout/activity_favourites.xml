@@ -30,6 +30,7 @@
             android:layout_gravity="center" />
     </com.google.android.material.appbar.MaterialToolbar>
 
+    <!-- Text to show if no favourite parks -->
     <TextView
         android:id="@+id/textEmpty"
         android:layout_width="wrap_content"
@@ -42,6 +43,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Park Recycleview -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerParks"
         android:layout_width="0dp"

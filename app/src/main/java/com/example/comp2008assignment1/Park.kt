@@ -1,5 +1,7 @@
 package com.example.comp2008assignment1
 
+// Park Data Class
+
 data class Park(
     val parkID: String,
     val name: String,

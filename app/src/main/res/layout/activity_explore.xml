@@ -30,6 +30,7 @@
             android:layout_gravity="center" />
     </com.google.android.material.appbar.MaterialToolbar>
 
+    <!-- Park Recycleview -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerParks"
         android:layout_width="0dp"
