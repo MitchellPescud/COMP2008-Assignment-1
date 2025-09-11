@@ -17,8 +17,7 @@ import com.google.android.material.chip.ChipGroup
 
 // Activity for the "Explore" page of the app.
 // Displays all available parks from ParkRepository, shows their details
-// Lets the user favourite/unfavourite them.
-
+// Lets the user favourite / un-favourite them.
 class Explore : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
@@ -32,10 +31,10 @@ class Explore : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge() // Enable edge-to-edge layout (draw under system bars)
+        enableEdgeToEdge()
         setContentView(R.layout.activity_explore)
 
-        // Handle padding for system bars (status/nav bar areas)
+        // Handle edge-to-edge padding for system bars (status/nav bar areas)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -47,42 +46,37 @@ class Explore : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)  // Show back arrow
         supportActionBar?.setDisplayShowTitleEnabled(false) // Hide default title (use custom TextView instead)
-
-        // Handle back arrow click → navigate back to MainActivity
-        toolbar.setNavigationOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+        toolbar.setNavigationOnClickListener { // Handle back arrow click
+            val intent = Intent(this, MainActivity::class.java) // Navigate back to MainActivity
             startActivity(intent)
             finish() // Close Explore activity
         }
 
-        // -- Views
+        // --- View lookups ---
         searchView = findViewById(R.id.searchView)
         chipGroup = findViewById(R.id.chipGroup)
         recyclerView = findViewById(R.id.recyclerParks)
 
         // --- RecyclerView setup for displaying parks ---
         recyclerView.layoutManager = LinearLayoutManager(this) // Vertical scrolling list
-
-        // Create adapter with callback when user clicks favourite button
         adapter = ParkAdapter { park ->
             if (park.isFavourite) {
                 // User just favourited → show toast
                 Toast.makeText(this, "You favourited ${park.name}", Toast.LENGTH_SHORT).show()
             } else {
-                // User unfavourited → show toast
+                // User un-favourited → show toast
                 Toast.makeText(this, "You unfavourited ${park.name}", Toast.LENGTH_SHORT).show()
             }
         }
         recyclerView.adapter = adapter
 
-        // --- Load data from repository ---
-        // Get all parks from ParkRepository
-        allParks = ParkRepository.getAll()
+        // Load data from repository
+        allParks = ParkRepository.getAll() // Get all parks from ParkRepository
 
         // Build chips from categories present in data
         buildCategoryChips(deriveCategories(allParks))
 
-        // Serch listener (live filter)
+        // Live text search: filter on every keystroke (case-insensitive)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean = true
             override fun onQueryTextChange(newText: String?): Boolean {
@@ -92,26 +86,32 @@ class Explore : AppCompatActivity() {
             }
         })
 
-        // Category change listener (live filter)
+        // Live category filter: chips are single-select; "All" shows everything
         chipGroup.setOnCheckedStateChangeListener { group,  _ ->
             val checkedId = group.checkedChipId
             currentCategory = group.findViewById<Chip>(checkedId)?.text?.toString() ?: "All"
             applyFilters()
         }
 
+        // Initial list
         applyFilters()
     }
 
     override fun onResume() {
         super.onResume()
-        // Refresh favourite icons after returning from elsewhere
+
+        // Refresh list to reflect any favourite changes made elsewhere
         applyFilters()
     }
+
+    // --- Filtering logic ---
+
+    // Applies current search + category filter, merges favourite state, and updates the adapter
     private fun applyFilters() {
         val favs = FavouriteStore.getFavourites(this)
 
-        // Text match across name, location, activities, features
         val filtered = allParks.filter { p ->
+            // Text match across name, location, activities, features
             val textMatch = currentQuery.isBlank() ||
                     p.name.contains(currentQuery, ignoreCase = true) ||
                     p.location.contains(currentQuery, ignoreCase = true) ||
@@ -120,6 +120,7 @@ class Explore : AppCompatActivity() {
                         it.contains(currentQuery, ignoreCase = true)
                     }
 
+            // Category match across activities OR features (treat either as a "category")
             val catMatch = (currentCategory == "All") ||
                     p.activities.any { it.equals(currentCategory, ignoreCase = true) } ||
                     p.features.any {
@@ -127,12 +128,16 @@ class Explore : AppCompatActivity() {
                     }
 
             textMatch && catMatch
-        }.map { it.copy(isFavourite = favs.contains(it.parkID)) }
+        }
+            // Copy list so each item reflects favourite state
+            .map { it.copy(isFavourite = favs.contains(it.parkID)) }
 
         adapter.setItems(filtered)
         }
 
+    // Derives a unique, ordered category list from parks' activities + features
     private fun deriveCategories(parks: List<Park>): List<String> {
+        // First item is always "All"
         val set = linkedSetOf("All")
 
         parks.forEach { p ->
@@ -143,13 +148,14 @@ class Explore : AppCompatActivity() {
         return set.toList()
     }
 
+    // Creates a chip for each category and adds it to the ChipGroup
     private fun buildCategoryChips(categories: List<String>) {
         chipGroup.removeAllViews()
         categories.forEachIndexed { idx, cat ->
             val chip = Chip(this).apply {
                 id = View.generateViewId()
                 text = cat
-                isCheckable = true
+                isCheckable = true // Enable selection behaviour
                 isCheckedIconVisible = false
             }
             chipGroup.addView(chip)
