@@ -1,20 +1,24 @@
-kings_park|Kings Park|Perth, WA|Walking,Picnics,Botanic Gardens|Playground,Lookout,Cafe
-hyde_park|Hyde Park|Sydney, NSW|Jogging,Relaxing|Fountain,Historic Trees
-centenary_park|Centenary Park|Melbourne, VIC|Cycling,Running|Dog-friendly,BBQ area
-southbank_parklands|South Bank Parklands|Brisbane, QLD|Swimming,Markets,Dining|Beach,Lagoon,Wheel
-botanic_gardens_adelaide|Adelaide Botanic Gardens|Adelaide, SA|Strolling,Photography|Glasshouse,Cafe,Lake
-launceston_city_park|Launceston City Park|Launceston, TAS|Picnics,Events|Monkey Enclosure,Fountain
-darwin_waterfront|Darwin Waterfront Park|Darwin, NT|Swimming,Walking|Wave Pool,Shops,Restaurants
-flinders_park|Flinders Park|Geelong, VIC|Jogging,Picnics|Playground,Basketball Court
-lake_mongers_park|Lake Monger Reserve|Perth, WA|Cycling,Birdwatching|Lake,Boardwalks
-albert_park|Albert Park|Melbourne, VIC|Running,Cycling|Lake,Boating,F1 Circuit
-new_farm_park|New Farm Park|Brisbane, QLD|Walking,Gardening|Rose Gardens,Playground
-royal_botanic_gardens_sydney|Royal Botanic Gardens|Sydney, NSW|Guided Tours,Picnics|Harbour Views,Tropical Centre
-st_kilda_foreshore|St Kilda Foreshore|Melbourne, VIC|Swimming,Skating|Beach,Pier,Amusement Rides
-queens_gardens|Queens Gardens|Townsville, QLD|Jogging,Photography|Fountains,Tropical Plants
-riverway_park|Riverway Park|Townsville, QLD|Walking,Events|Swimming Lagoon,Art Centre
-parramatta_park|Parramatta Park|Parramatta, NSW|Running,Markets|Historic Sites,Playgrounds
-royal_tasmanian_botanical|Royal Tasmanian Botanical Gardens|Hobart, TAS|Tours,Photography|Conservatory,Japanese Garden
-bibra_lake_reserve|Bibra Lake Reserve|Perth, WA|Walking,Birdwatching|BBQ,Parks,Playground
-lake_burley_griffin|Lake Burley Griffin Park|Canberra, ACT|Rowing,Cycling,Walking|Lake,Fountains
-geraldton_foreshore|Geraldton Foreshore|Geraldton, WA|Swimming,Skating|Beach,Cafes,Playground
+# === Standardised sets (for reference only) ===
+# Activities: Walking, Picnics, Cycling, Jogging, Swimming, Relaxing, Photography, Guided Tours, Markets, Events
+# Features:   Playground, Lookout, Cafe, Fountain, Historic Trees, Lake, Historic Site, BBQ Area, Art Centre, Beach
+
+kings_park | Kings Park | Perth, WA | Walking, Picnics, Guided Tours | Playground, Lookout, Cafe | One of the world’s great inner-city parks with expansive views over Perth. Botanic trails and cultural landmarks make it ideal for slow walks and learning. | 4.8
+hyde_park | Hyde Park | Sydney, NSW | Walking, Relaxing, Photography | Fountain, Historic Trees, Cafe | Sydney’s oldest public park with grand avenues and shady lawns. A calm escape for lunch breaks, casual strolls, and classic photo spots. | 4.4
+centenary_park | Centenary Park | Melbourne, VIC | Jogging, Cycling, Relaxing | BBQ Area, Lake, Playground | Open lawns and loop tracks suit morning runs and family rides. Shaded seating and picnic shelters make lingering easy. | 4.2
+southbank_parklands | South Bank Parklands | Brisbane, QLD | Walking, Markets, Swimming | Beach, Art Centre, Fountain | A riverside precinct blending greenery, dining, and culture. The lagoon and weekend markets create a lively, holiday feel. | 4.6
+botanic_gardens_adelaide | Adelaide Botanic Gardens | Adelaide, SA | Guided Tours, Photography, Walking | Historic Site, Cafe, Lake | Historic glasshouses and themed gardens reward slow exploration. Calm paths and lakeside vistas invite frequent returns. | 4.7
+launceston_city_park | Launceston City Park | Launceston, TAS | Picnics, Events, Photography | Fountain, Historic Trees, Playground | A community hub with seasonal events among heritage grounds. Families love the lawns and easy central access. | 4.3
+darwin_waterfront | Darwin Waterfront Park | Darwin, NT | Swimming, Relaxing, Events | Beach, Cafe, Art Centre | Tropical vibes with lawns, a wave pool, and boardwalks. Evening breezes and nearby eateries make it a social favourite. | 4.5
+flinders_park | Flinders Park | Geelong, VIC | Jogging, Walking, Picnics | Playground, BBQ Area, Lake | Quiet tracks circle water and open greens. Ideal for weekend picnics and casual fitness. | 4.1
+lake_monger_reserve | Lake Monger Reserve | Perth, WA | Cycling, Walking, Photography | Lake, Lookout, Historic Trees | A large urban lake full of birdlife and loop paths. Sunrise and sunset circuits are local rituals. | 4.3
+albert_park | Albert Park | Melbourne, VIC | Jogging, Cycling, Events | Lake, Fountain, Cafe | A scenic lake used by runners, riders, and event-goers. Views across the water pair with plentiful rest spots. | 4.4
+new_farm_park | New Farm Park | Brisbane, QLD | Walking, Picnics, Markets | Historic Site, Playground, BBQ Area | Riverfront lawns and heritage structures set the scene. Weekend markets and gatherings give it a village feel. | 4.5
+royal_botanic_gardens_sydney | Royal Botanic Gardens Sydney | Sydney, NSW | Guided Tours, Photography, Walking | Lookout, Cafe, Historic Site | Harbour views meet curated plant collections. Wide paths and lookouts encourage wandering and lingering. | 4.8
+st_kilda_foreshore | St Kilda Foreshore | Melbourne, VIC | Swimming, Jogging, Events | Beach, Fountain, Cafe | A lively seaside strip for swims, runs, and sunsets. Cafes and the pier add classic Melbourne character. | 4.4
+queens_gardens | Queens Gardens | Townsville, QLD | Walking, Photography, Relaxing | Historic Trees, Fountain, Historic Site | A tropical heritage garden with Victorian charm. Lush planting and quiet corners invite reflection. | 4.2
+riverway_park | Riverway Park | Townsville, QLD | Walking, Events, Swimming | Art Centre, Lake, Playground | Cultural facilities sit beside lagoons and lawns. It’s a go-to for community festivals and family afternoons. | 4.3
+parramatta_park | Parramatta Park | Parramatta, NSW | Jogging, Markets, Walking | Historic Trees, Playground, BBQ Area | Heritage features meet modern open space. Market days bring a friendly bustle to the paths and ovals. | 4.2
+royal_tasmanian_botanical | Royal Tasmanian Botanical Gardens | Hobart, TAS | Guided Tours, Photography, Relaxing | Historic Site, Cafe, Fountain | One of Australia’s oldest gardens with cool-climate specialties. Quiet nooks and changing seasons reward repeat visits. | 4.7
+bibra_lake_reserve | Bibra Lake Reserve | Perth, WA | Walking, Cycling, Picnics | Lake, Playground, BBQ Area | Lakeside paths suit family rides and pram walks. Bird hides and open lawns make a relaxed day out. | 4.2
+lake_burley_griffin | Lake Burley Griffin Park | Canberra, ACT | Cycling, Walking, Photography | Lake, Lookout, Historic Site | Capital landmarks circle these shoreline paths. Long, flat sections are perfect for scenic rides. | 4.4
+geraldton_foreshore | Geraldton Foreshore | Geraldton, WA | Swimming, Markets, Events | Beach, Cafe, Art Centre | A revitalised waterfront with safe swimming and play areas. Regular events and stalls bring a festive rhythm. | 4.3
