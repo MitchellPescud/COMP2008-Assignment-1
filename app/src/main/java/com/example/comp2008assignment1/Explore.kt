@@ -24,7 +24,6 @@ class Explore : AppCompatActivity() {
     private lateinit var adapter: ParkAdapter
     private lateinit var searchView: SearchView
     private lateinit var chipGroup: ChipGroup
-
     private var allParks: List<Park> = emptyList()
     private var currentQuery: String = ""
     private var currentCategory: String = "All"
