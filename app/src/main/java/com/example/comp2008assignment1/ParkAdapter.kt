@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import android.content.Intent
 
 // Adapter to handle displaying a list of Park objects inside a RecyclerView
 // Responsible for binding data to item views and handling interactions (favourite button)
@@ -112,6 +113,14 @@ class ParkAdapter(
 
                 // Trigger callback so Activity/Fragment can react (e.g., show Toast)
                 onFavouriteClick(park)
+            }
+
+            // Handle clicks anywhere else on the item
+            itemView.setOnClickListener {
+                val intent = Intent(ctx, ParkDetailedView::class.java).apply {
+                    putExtra("PARK_ID", park.parkID) // pass only the ID
+                }
+                ctx.startActivity(intent)
             }
         }
     }

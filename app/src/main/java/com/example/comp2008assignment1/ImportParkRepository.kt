@@ -79,6 +79,11 @@ object ParkRepository {
     // Returns the full list of loaded parks
     fun getAll(): List<Park> = parks
 
+    // Returns a single Park by ID (or null if not found)
+    fun getById(parkID: String): Park? {
+        return parks.find { it.parkID == parkID }
+    }
+
     // Splits a comma-separated string into a cleaned List<String>
     // Removes blanks and trims spaces around entries
     private fun splitList(field: String): List<String> =
