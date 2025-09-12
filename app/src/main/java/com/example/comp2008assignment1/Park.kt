@@ -8,5 +8,7 @@ data class Park(
     val location: String,
     val activities: List<String>,
     val features: List<String>,
+    val description: String = "",
+    val rating: Double = 0.0,
     var isFavourite: Boolean = false
 )
