@@ -64,6 +64,18 @@ class ParkDetailedView : AppCompatActivity() {
             "Features: ${park.features.joinToString(" • ")}"
         findViewById<TextView>(R.id.textDescription).text = park.description
         findViewById<TextView>(R.id.textRating).text = "Average Rating: ${park.rating}/5.0"
+        // --- Fill the three activity icon slots ---
+        val actIconViews = listOf(
+            findViewById<ImageView>(R.id.activityIcon1),
+            findViewById<ImageView>(R.id.activityIcon2),
+            findViewById<ImageView>(R.id.activityIcon3)
+        )
+        // --- Fill the three feature icon slots ---
+        val featIconViews = listOf(
+            findViewById<ImageView>(R.id.featureIcon1),
+            findViewById<ImageView>(R.id.featureIcon2),
+            findViewById<ImageView>(R.id.featureIcon3)
+        )
 
         val avgRatingBar = findViewById<RatingBar>(R.id.ratingBar)
         val userRatingBar = findViewById<RatingBar>(R.id.ratingBarUser)
@@ -112,5 +124,41 @@ class ParkDetailedView : AppCompatActivity() {
                 Toast.LENGTH_SHORT
             ).show()
         }
+
+        // Function to bind icons from activity and feature to view
+        fun bindIcons(views: List<ImageView>, names: List<String>) {
+            // Show up to views.size icons; hide the rest
+            for (i in views.indices) {
+                val iv = views[i]
+                if (i < names.size) {
+                    val name = names[i]
+                    val resId = iconResFor(name)
+                    if (resId != 0) {
+                        iv.setImageResource(resId)
+                    } else {
+                        // fallback if a specific icon isn't found
+                        iv.setImageResource(R.drawable.unknown)
+                        Log.w("ParkDetailedView", "Icon not found for '$name' → using fallback.")
+                    }
+                    iv.contentDescription = name
+                    iv.visibility = android.view.View.VISIBLE
+                } else {
+                    iv.visibility = android.view.View.GONE
+                }
+            }
+        }
+
+        // Activities and features come from your Park model:
+        bindIcons(actIconViews, park.activities.take(3))
+        bindIcons(featIconViews, park.features.take(3))
+
+    }
+    // Function to resolve icon names from activity and feature names
+    private fun iconResFor(name: String): Int {
+        val key = name
+            .trim()
+            .lowercase(Locale.ROOT)
+            .replace("\\s+".toRegex(), "_")
+        return resources.getIdentifier(key, "drawable", packageName)
     }
 }
