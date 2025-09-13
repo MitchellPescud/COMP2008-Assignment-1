@@ -12,6 +12,9 @@ import android.widget.Toast
 import com.google.android.material.appbar.MaterialToolbar
 import android.widget.RatingBar
 import android.widget.Button
+import android.widget.ImageView
+import android.util.Log
+import java.util.Locale
 
 class ParkDetailedView : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,12 +32,11 @@ class ParkDetailedView : AppCompatActivity() {
         // --- Toolbar setup ---
         val toolbar = findViewById<MaterialToolbar>(R.id.Navigation_Bar)
         setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)  // Show back arrow
-        supportActionBar?.setDisplayShowTitleEnabled(false) // Hide default title (use custom TextView instead)
-        toolbar.setNavigationOnClickListener { // Handle back arrow click
-            val intent = Intent(this, MainActivity::class.java) // Navigate back to MainActivity
-            startActivity(intent)
-            finish() // Close Explore activity
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)      // show back arrow
+        supportActionBar?.setDisplayShowTitleEnabled(false)    // using custom title view
+
+        toolbar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()            // pop this activity, go back to previous
         }
 
         // --- Get park id from Intent ---
@@ -66,6 +68,19 @@ class ParkDetailedView : AppCompatActivity() {
         val avgRatingBar = findViewById<RatingBar>(R.id.ratingBar)
         val userRatingBar = findViewById<RatingBar>(R.id.ratingBarUser)
         val btnVisited = findViewById<Button>(R.id.btnVisited)
+        val parkImage = ParkRepository.getById(parkId)
+
+        // --- Park header image (with fallback) ---
+        val imageView = findViewById<ImageView>(R.id.imagePark)
+        val resName = park.parkID.lowercase(Locale.ROOT)
+        val photoResId = resources.getIdentifier(resName, "drawable", packageName)
+
+        if (photoResId != 0) {
+            imageView.setImageResource(photoResId)
+        } else {
+            Log.w("ParkDetailedView", "Drawable not found for parkID='$resName'. Using sample_park.")
+            imageView.setImageResource(R.drawable.sample_park) // fallback/default
+        }
 
         // --- Persist visited + rating ---
         val prefs = getSharedPreferences("item_detail", Context.MODE_PRIVATE)
