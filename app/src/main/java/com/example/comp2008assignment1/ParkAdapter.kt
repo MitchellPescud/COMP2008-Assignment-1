@@ -80,15 +80,15 @@ class ParkAdapter(
             park.isFavourite = FavouriteStore.isFavourite(ctx, park.parkID)
 
             // Try to resolve park image using parkID
-            val imageResId = ctx.resources.getIdentifier(
+            val imageId = ctx.resources.getIdentifier(
                 park.parkID.lowercase(), // assumes drawable names are lowercase
                 "drawable",
                 ctx.packageName
             )
 
-            // If image exists, use it; otherwise fallback to sample
-            if (imageResId != 0) {
-                parkImage.setImageResource(imageResId)
+            // If image exists, use it, otherwise fallback to sample
+            if (imageId != 0) {
+                parkImage.setImageResource(imageId)
             } else {
                 parkImage.setImageResource(R.drawable.sample_park) // fallback/default
             }

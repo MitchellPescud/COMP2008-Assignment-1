@@ -48,6 +48,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Park Photo -->
             <ImageView
                 android:id="@+id/imagePark"
                 android:src="@drawable/sample_park"
@@ -55,6 +56,7 @@
                 android:layout_height="200dp"
                 android:scaleType="centerCrop" />
 
+            <!-- Park Title -->
             <TextView
                 android:id="@+id/textName"
                 android:layout_width="wrap_content"
@@ -64,12 +66,14 @@
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
+            <!-- Park Location -->
             <TextView
                 android:id="@+id/textLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Location" />
 
+            <!-- Park Rating -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -100,20 +104,21 @@
                     android:text="0/5" />
             </LinearLayout>
 
-
-
+            <!-- Park Activities -->
             <TextView
                 android:id="@+id/textActivities"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Activities" />
 
+            <!-- Park Features -->
             <TextView
                 android:id="@+id/textFeatures"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Features" />
 
+            <!-- Visited Park Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnVisited"
                 android:layout_width="match_parent"
@@ -121,6 +126,7 @@
                 android:layout_marginTop="12dp"
                 android:text="Mark as Visited" />
 
+            <!-- Park User Rating -->
             <TextView
                 android:layout_marginTop="12dp"
                 android:layout_width="wrap_content"
@@ -135,6 +141,7 @@
                 android:rating="0"
                 android:stepSize="1.0" />
 
+            <!-- Park Description -->
             <TextView
                 android:id="@+id/textDescription"
                 android:layout_width="match_parent"

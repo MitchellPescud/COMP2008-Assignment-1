@@ -68,17 +68,15 @@ class ParkDetailedView : AppCompatActivity() {
         val avgRatingBar = findViewById<RatingBar>(R.id.ratingBar)
         val userRatingBar = findViewById<RatingBar>(R.id.ratingBarUser)
         val btnVisited = findViewById<Button>(R.id.btnVisited)
-        val parkImage = ParkRepository.getById(parkId)
 
         // --- Park header image (with fallback) ---
         val imageView = findViewById<ImageView>(R.id.imagePark)
-        val resName = park.parkID.lowercase(Locale.ROOT)
-        val photoResId = resources.getIdentifier(resName, "drawable", packageName)
+        val photoId = resources.getIdentifier(parkId, "drawable", packageName)
 
-        if (photoResId != 0) {
-            imageView.setImageResource(photoResId)
+        if (photoId != 0) {
+            imageView.setImageResource(photoId)
         } else {
-            Log.w("ParkDetailedView", "Drawable not found for parkID='$resName'. Using sample_park.")
+            Log.w("ParkDetailedView", "Drawable not found for parkID='$parkId'. Using sample_park.")
             imageView.setImageResource(R.drawable.sample_park) // fallback/default
         }
 
