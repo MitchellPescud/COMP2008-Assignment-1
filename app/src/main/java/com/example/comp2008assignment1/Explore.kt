@@ -10,10 +10,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import androidx.core.content.ContextCompat
+import android.widget.TextView
+import android.text.SpannableString
+import android.text.style.UnderlineSpan
 
 // Explore Activity
-// Shows all available categories of parks in a grid (e.g. All, Playgrounds, Sports, Favourites).
-// Clicking a category opens ParkListActivity or Favourites.
+// Shows all available categories of parks in a grid (e.g. Playgrounds, Sports).
+// Clicking a category opens ParkListActivity. "All" and "Favourites" are fixed at the top.
 class Explore : AppCompatActivity() {
     private lateinit var recycler: RecyclerView
     private lateinit var adapter: CategoryAdapter
@@ -46,28 +49,35 @@ class Explore : AppCompatActivity() {
             finish()
         }
 
-        // --- RecyclerView setup for category grid ---
+        // --- Fixed "All" button click handler ---
+        findViewById<TextView>(R.id.allButton).setOnClickListener {
+            startActivity(Intent(this, ParkListActivity::class.java))
+        }
+
+        // --- Fixed "Favourites" button click handler ---
+        findViewById<TextView>(R.id.favouritesButton).setOnClickListener {
+            startActivity(Intent(this, Favourites::class.java))
+        }
+
+        // --- Set underline for "Other Filters" header ---
+        val otherFiltersText = findViewById<TextView>(R.id.otherFiltersHeader)
+        val spannableString = SpannableString(otherFiltersText.text)
+        spannableString.setSpan(UnderlineSpan(), 0, spannableString.length, 0)
+        otherFiltersText.text = spannableString
+
+        // --- RecyclerView setup for category grid (excluding "All" and "Favourites") ---
         recycler = findViewById(R.id.recyclerCategories)
         recycler.layoutManager = GridLayoutManager(this, 2)
 
-        // Build categories list with counts from ParkRepository
+        // Build categories list with counts from ParkRepository, excluding "All" and "Favourites"
         val parks = ParkRepository.getAll()
-        val categories = deriveCategoriesWithCounts(parks)
-
-        // Add Favourites as a special card at the start
-        val allWithFav = listOf(CategoryItem("Favourites", 0, android.R.drawable.btn_star)) + categories
+        val categories = deriveCategoriesWithCounts(parks).filter { it.name !in listOf("All", "Favourites") }
 
         // Bind to adapter (handles click events)
-        adapter = CategoryAdapter(allWithFav) { category ->
-            when (category.name) {
-                "Favourites" -> startActivity(Intent(this, Favourites::class.java))
-                "All" -> startActivity(Intent(this, ParkListActivity::class.java))
-                else -> {
-                    val intent = Intent(this, ParkListActivity::class.java)
-                    intent.putExtra("extra_initial_category", category.name) // literal key
-                    startActivity(intent)
-                }
-            }
+        adapter = CategoryAdapter(categories) { category ->
+            val intent = Intent(this, ParkListActivity::class.java)
+            intent.putExtra("extra_initial_category", category.name) // literal key
+            startActivity(intent)
         }
         recycler.adapter = adapter
     }
