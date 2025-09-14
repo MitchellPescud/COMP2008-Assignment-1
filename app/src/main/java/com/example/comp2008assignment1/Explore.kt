@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import androidx.core.content.ContextCompat
 
 // Explore Activity
 // Shows all available categories of parks in a grid (e.g. All, Playgrounds, Sports, Favourites).
@@ -36,6 +37,9 @@ class Explore : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        // Set the navigation icon tint to black
+        toolbar.navigationIcon?.setTint(ContextCompat.getColor(this, android.R.color.black))
+
         // Back arrow to return to MainActivity
         toolbar.setNavigationOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
@@ -50,8 +54,8 @@ class Explore : AppCompatActivity() {
         val parks = ParkRepository.getAll()
         val categories = deriveCategoriesWithCounts(parks)
 
-        // Add Favourites as a special card at the end
-        val allWithFav = categories + CategoryItem("Favourites", 0, android.R.drawable.btn_star)
+        // Add Favourites as a special card at the start
+        val allWithFav = listOf(CategoryItem("Favourites", 0, android.R.drawable.btn_star)) + categories
 
         // Bind to adapter (handles click events)
         adapter = CategoryAdapter(allWithFav) { category ->

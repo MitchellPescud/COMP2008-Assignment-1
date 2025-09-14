@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import androidx.core.content.ContextCompat
 
 // ParkListActivity
 // Displays a filtered list of parks (based on search query or category).
@@ -47,6 +48,9 @@ class ParkListActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        // Set the navigation icon tint to black
+        toolbar.navigationIcon?.setTint(ContextCompat.getColor(this, android.R.color.black))
 
         // Back arrow to Explore
         toolbar.setNavigationOnClickListener {
