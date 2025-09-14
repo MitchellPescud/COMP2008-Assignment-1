@@ -35,6 +35,7 @@ class ParkListActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_park_list)
 
+        // Apply safe insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val sb = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(sb.left, sb.top, sb.right, sb.bottom)
@@ -57,7 +58,6 @@ class ParkListActivity : AppCompatActivity() {
         searchView = findViewById(R.id.searchView)
         chipGroup = findViewById(R.id.chipGroup)
         recyclerView = findViewById(R.id.recyclerParks)
-
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         // RecyclerView adapter
@@ -73,11 +73,20 @@ class ParkListActivity : AppCompatActivity() {
         // Load parks
         allParks = ParkRepository.getAll()
 
+        // --- Restore state if available ---
+        if (savedInstanceState != null) {
+            currentQuery = savedInstanceState.getString("state_query", "")
+            currentCategory = savedInstanceState.getString("state_category", "All")
+        } else {
+            // Fallback: get initial category from Explore
+            currentCategory = intent.getStringExtra("extra_initial_category") ?: "All"
+        }
+
         // Build category chips from park data
         buildCategoryChips(deriveCategories(allParks))
 
-        // Apply initial category filter if Explore passed one
-        currentCategory = intent.getStringExtra("extra_initial_category") ?: "All"
+        // Restore query + chip state
+        searchView.setQuery(currentQuery, false)
         selectChip(currentCategory)
 
         // --- Search ---
@@ -106,6 +115,13 @@ class ParkListActivity : AppCompatActivity() {
 
         // Refresh results (in case favourites changed)
         applyFilters()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Save search + category
+        outState.putString("state_query", currentQuery)
+        outState.putString("state_category", currentCategory)
     }
 
     // Filter parks by query + category + favourite state

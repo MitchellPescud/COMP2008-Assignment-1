@@ -54,9 +54,9 @@ class Favourites : AppCompatActivity() {
         chipGroup = findViewById(R.id.chipGroup)
         recyclerView = findViewById(R.id.recyclerParks)
         emptyView = findViewById(R.id.textEmpty)
-
-        // RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        // Adapter for displaying favourite parks
         adapter = ParkAdapter { park ->
             if (park.isFavourite) {
                 Toast.makeText(this, "You favourited ${park.name}", Toast.LENGTH_SHORT).show()
@@ -71,7 +71,21 @@ class Favourites : AppCompatActivity() {
         }
         recyclerView.adapter = adapter
 
-        // Search
+        // --- Restore state if available ---
+        if (savedInstanceState != null) {
+            currentQuery = savedInstanceState.getString("state_query", "")
+            currentCategory = savedInstanceState.getString("state_category", "All")
+        }
+
+        // Build favourites + categories
+        favParks = buildFavourites()
+        buildCategoryChips(deriveCategories(favParks))
+
+        // Restore UI state
+        searchView.setQuery(currentQuery, false)
+        selectChip(currentCategory)
+
+        // Search handling
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean = true
             override fun onQueryTextChange(newText: String?): Boolean {
@@ -81,16 +95,13 @@ class Favourites : AppCompatActivity() {
             }
         })
 
-        // Chips
+        // Chip handling
         chipGroup.setOnCheckedStateChangeListener { group, _ ->
             val checkedId = group.checkedChipId
             currentCategory = group.findViewById<Chip>(checkedId)?.text?.toString() ?: "All"
             applyFilters()
         }
 
-        // Initial content
-        favParks = buildFavourites()
-        buildCategoryChips(deriveCategories(favParks))
         applyFilters()
     }
 
@@ -108,8 +119,13 @@ class Favourites : AppCompatActivity() {
         applyFilters()
     }
 
-    // --- Core filtering ---
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("state_query", currentQuery)
+        outState.putString("state_category", currentCategory)
+    }
 
+    // --- Core filtering ---
     private fun applyFilters() {
         val filtered = favParks.filter { p ->
             val textMatch = currentQuery.isBlank() ||
@@ -178,9 +194,14 @@ class Favourites : AppCompatActivity() {
             }
         }
     }
-
     private fun rebuildChipsIfNeeded() {
         val cats = deriveCategories(favParks)
         buildCategoryChips(cats)
+    }
+    private fun selectChip(name: String) {
+        for (i in 0 until chipGroup.childCount) {
+            val chip = chipGroup.getChildAt(i) as? Chip ?: continue
+            chip.isChecked = chip.text.toString().equals(name, true)
+        }
     }
 }
