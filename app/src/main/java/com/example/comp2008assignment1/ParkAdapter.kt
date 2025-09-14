@@ -16,17 +16,17 @@ class ParkAdapter(
     private val onFavouriteClick: (Park) -> Unit // Callback when a park is favourited/unfavourited
 ) : RecyclerView.Adapter<ParkAdapter.ParkViewHolder>() {
 
-    // Backing list of Park objects for the adapter
+    // List of Park objects for the adapter
     private val items = mutableListOf<Park>()
 
-    // Creates a new ViewHolder (row/item in RecyclerView)
+    // Create new ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ParkViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_park, parent, false) // Inflate custom item layout
         return ParkViewHolder(view, onFavouriteClick)
     }
 
-    // Binds data to an existing ViewHolder at a given position
+    // Bind data to an existing ViewHolder at a given position
     override fun onBindViewHolder(holder: ParkViewHolder, position: Int) {
         holder.bind(items[position])
     }
@@ -55,16 +55,14 @@ class ParkAdapter(
         }
     }
 
-    // Returns the current list of items (useful for persistence or debugging)
+    // Returns the current list of items
     fun currentItems(): List<Park> = items
 
-    // Holds references to views inside each RecyclerView item (ViewHolder pattern)
     class ParkViewHolder(
         itemView: View,
         private val onFavouriteClick: (Park) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
 
-        // UI elements inside item_park.xml
         private val parkImage: ShapeableImageView = itemView.findViewById(R.id.imagePark)
         private val name: TextView = itemView.findViewById(R.id.textName)
         private val location: TextView = itemView.findViewById(R.id.textLocation)
@@ -72,11 +70,11 @@ class ParkAdapter(
         private val features: TextView = itemView.findViewById(R.id.textFeatures)
         private val favourite: ImageButton = itemView.findViewById(R.id.btnFavourite)
 
-        // Binds a single Park object to the views
+        // Bind a single Park object to the view
         fun bind(park: Park) {
             val ctx = itemView.context
 
-            // Ensure isFavourite is synced with persisted storage (e.g., SharedPreferences)
+            // Ensure isFavourite is synced with persisted storage
             park.isFavourite = FavouriteStore.isFavourite(ctx, park.parkID)
 
             // Try to resolve park image using parkID

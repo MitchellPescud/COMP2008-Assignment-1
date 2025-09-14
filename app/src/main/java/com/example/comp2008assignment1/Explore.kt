@@ -81,17 +81,17 @@ class Explore : AppCompatActivity() {
 
         allParks = ParkRepository.getAll()
 
-        // 1) Start with defaults or rotation restore
+        // Start with defaults or rotation restore
         savedInstanceState?.let {
             currentActivity = it.getString("currentActivity", "All")
             currentFeature  = it.getString("currentFeature",  "All")
         }
 
-        // 2) Intents from MainActivity take precedence if present
+        // Then Get Intents from MainActivity which will take over if applicable
         intent.getStringExtra(EXTRA_ACTIVITY_FILTER)?.let { currentActivity = it }
         intent.getStringExtra(EXTRA_FEATURE_FILTER )?.let { currentFeature  = it }
 
-        // Build chips (these include "All" at index 0)
+        // Build chips
         buildActivityChips(deriveActivities(allParks))
         buildFeatureChips(deriveFeatures(allParks))
 
@@ -101,7 +101,7 @@ class Explore : AppCompatActivity() {
         selectChipByText(chipGroupFeatures, currentFeature) ||
                 selectChipByText(chipGroupFeatures, "All")
 
-        // Listeners (unchanged)
+        // Listeners for chips and search bar to update objects
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?) = true
             override fun onQueryTextChange(newText: String?): Boolean {
@@ -127,7 +127,6 @@ class Explore : AppCompatActivity() {
 
 
     // --- Filtering logic ---
-
     // Applies current search + category filter, merges favourite state, and updates the adapter
     private fun applyFilters() {
         val favs = FavouriteStore.getFavourites(this)
@@ -155,7 +154,7 @@ class Explore : AppCompatActivity() {
         adapter.setItems(filtered)
     }
 
-    // ---- Chip builders & set derivation ----
+    // Chip Builders
     private fun buildActivityChips(activities: List<String>) {
         chipGroupActivities.removeAllViews()
         activities.forEachIndexed { idx, item ->
@@ -186,6 +185,7 @@ class Explore : AppCompatActivity() {
         }
     }
 
+    // Derive Categories from list of parks
     private fun deriveActivities(parks: List<Park>): List<String> {
         val set = linkedSetOf("All")
         parks.forEach { p -> p.activities.forEach { if (it.isNotBlank()) set.add(it.trim()) } }
@@ -205,7 +205,7 @@ class Explore : AppCompatActivity() {
         outState.putString("currentFeature", currentFeature)
     }
 
-    // Helper to select a chip by its visible text (case-insensitive).
+    // Helper to select a chip by its visible text (case-insensitive)
     private fun selectChipByText(group: ChipGroup, text: String?): Boolean {
         if (text.isNullOrBlank()) return false
         for (i in 0 until group.childCount) {

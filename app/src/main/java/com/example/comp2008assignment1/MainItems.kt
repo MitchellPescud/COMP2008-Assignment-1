@@ -16,7 +16,7 @@ data class CategoryItem(
     val iconRes: Int? = null   // optional drawable resource
 )
 
-// --- Helpers: name -> drawable id (with caching) ---
+// Helpers
 private fun categoryToDrawableName(raw: String): String =
     raw.lowercase()
         .replace("[^a-z0-9]+".toRegex(), "_")
@@ -35,7 +35,7 @@ private class DrawableIdCache(private val ctx: Context) {
     }
 }
 
-// --- Diff ---
+// Diff
 private object CategoryDiff : DiffUtil.ItemCallback<CategoryItem>() {
     override fun areItemsTheSame(oldItem: CategoryItem, newItem: CategoryItem) =
         oldItem.name == newItem.name
@@ -43,7 +43,7 @@ private object CategoryDiff : DiffUtil.ItemCallback<CategoryItem>() {
         oldItem == newItem
 }
 
-// --- Adapter ---
+// Adapter
 class CategoryButtonAdapter(
     context: Context,
     private val onClick: (CategoryItem, Boolean) -> Unit, // (item, isSelected)
@@ -77,8 +77,6 @@ class CategoryButtonAdapter(
         val resId = item.iconRes ?: iconCache.idFor(item.name)
         holder.icon.setImageResource(resId)
         holder.icon.contentDescription = item.name
-
-        // Selected state styling only if toggleSelection is enabled
         holder.itemView.alpha = if (isSelected) 1.0f else 0.92f
         holder.itemView.isSelected = isSelected
 
@@ -96,22 +94,8 @@ class CategoryButtonAdapter(
                 notifyItemChanged(pos)
                 onClick(clicked, nowSelected)
             } else {
-                // Fire-and-forget (no toggle UI/state) — perfect for Row 1 navigation
                 onClick(clicked, false)
             }
         }
-    }
-
-    // Public APIs for selection control (optional)
-    fun setSelectedCategories(names: Set<String>) {
-        selected.clear()
-        selected.addAll(names)
-        notifyDataSetChanged()
-    }
-
-    fun clearSelection() {
-        if (selected.isEmpty()) return
-        selected.clear()
-        notifyDataSetChanged()
     }
 }

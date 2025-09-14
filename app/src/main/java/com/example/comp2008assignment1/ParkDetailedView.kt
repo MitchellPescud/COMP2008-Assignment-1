@@ -29,7 +29,7 @@ class ParkDetailedView : AppCompatActivity() {
             insets
         }
 
-        // --- Toolbar setup ---
+        // Toolbar setup
         val toolbar = findViewById<MaterialToolbar>(R.id.Navigation_Bar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)      // show back arrow
@@ -39,7 +39,7 @@ class ParkDetailedView : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()            // pop this activity, go back to previous
         }
 
-        // --- Get park id from Intent ---
+        // Get park id from Intent
         val parkId = intent.getStringExtra("PARK_ID")
         if (parkId == null) {
             Toast.makeText(this, "Park id missing", Toast.LENGTH_SHORT).show()
@@ -47,7 +47,7 @@ class ParkDetailedView : AppCompatActivity() {
             return
         }
 
-        // --- Lookup park ---
+        // Lookup park
         val park = ParkRepository.getById(parkId)
         if (park == null) {
             Toast.makeText(this, "Park not found", Toast.LENGTH_SHORT).show()
@@ -55,7 +55,7 @@ class ParkDetailedView : AppCompatActivity() {
             return
         }
 
-        // --- Bind UI ---
+        // Bind UI
         findViewById<TextView>(R.id.textName).text = park.name
         findViewById<TextView>(R.id.textLocation).text = park.location
         findViewById<TextView>(R.id.textActivities).text =
@@ -64,13 +64,13 @@ class ParkDetailedView : AppCompatActivity() {
             "Features: ${park.features.joinToString(" • ")}"
         findViewById<TextView>(R.id.textDescription).text = park.description
         findViewById<TextView>(R.id.textRating).text = "Average Rating: ${park.rating}/5.0"
-        // --- Fill the three activity icon slots ---
+        // Fill the three activity icon slots
         val actIconViews = listOf(
             findViewById<ImageView>(R.id.activityIcon1),
             findViewById<ImageView>(R.id.activityIcon2),
             findViewById<ImageView>(R.id.activityIcon3)
         )
-        // --- Fill the three feature icon slots ---
+        // Fill the three feature icon slots
         val featIconViews = listOf(
             findViewById<ImageView>(R.id.featureIcon1),
             findViewById<ImageView>(R.id.featureIcon2),
@@ -81,7 +81,7 @@ class ParkDetailedView : AppCompatActivity() {
         val userRatingBar = findViewById<RatingBar>(R.id.ratingBarUser)
         val btnVisited = findViewById<Button>(R.id.btnVisited)
 
-        // --- Park header image (with fallback) ---
+        // Park header image (with fallback)
         val imageView = findViewById<ImageView>(R.id.imagePark)
         val photoId = resources.getIdentifier(parkId, "drawable", packageName)
 
@@ -92,20 +92,20 @@ class ParkDetailedView : AppCompatActivity() {
             imageView.setImageResource(R.drawable.sample_park) // fallback/default
         }
 
-        // --- Persist visited + rating ---
+        // Persist visited + rating
         val prefs = getSharedPreferences("item_detail", Context.MODE_PRIVATE)
         val visitedKey = "visited_$parkId"
         val userRatingKey = "user_rating_$parkId"
 
-        // --- Show average rating ---
+        // Show average rating
         avgRatingBar.rating = park.rating.toFloat()
         avgRatingBar.setIsIndicator(true)
 
-        // --- Restore user’s saved rating ---
+        // Restore user’s saved rating
         val savedUserRating = prefs.getFloat(userRatingKey, 0f)
         userRatingBar.rating = savedUserRating
 
-        // --- Save when user changes it ---
+        // Save when user changes it
         userRatingBar.setOnRatingBarChangeListener { _, newRating, _ ->
             prefs.edit().putFloat(userRatingKey, newRating).apply()
             Toast.makeText(this, "Your rating saved: $newRating", Toast.LENGTH_SHORT).show()

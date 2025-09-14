@@ -35,21 +35,21 @@ class Favourites : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_favourites)
 
-        // Edge-to-edge insets
+        // Handle edge-to-edge padding for system bars (status/nav bar areas)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(sys.left, sys.top, sys.right, sys.bottom)
             insets
         }
 
-        // Restore chip state on rotation
+        // Restore state if available
         savedInstanceState?.let {
             currentActivity = it.getString("currentActivity", "All")
             currentFeature  = it.getString("currentFeature",  "All")
             currentQuery    = it.getString("currentQuery", "")
         }
 
-        // Toolbar + Back
+        // --- Toolbar setup ---
         val toolbar = findViewById<MaterialToolbar>(R.id.Navigation_Bar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -92,12 +92,12 @@ class Favourites : AppCompatActivity() {
             }
         })
 
-        // Initial content + chips
+        // Load initial favourite parks
         favParks = buildFavourites()
         buildActivityChips(deriveActivities(favParks))
         buildFeatureChips(deriveFeatures(favParks))
 
-        // Reselect previous chips if possible, otherwise “All”
+        // Reselect previous chips if applicable
         selectChipByText(chipGroupActivities, currentActivity) ||
                 selectChipByText(chipGroupActivities, "All")
         selectChipByText(chipGroupFeatures, currentFeature) ||
@@ -138,7 +138,7 @@ class Favourites : AppCompatActivity() {
         outState.putString("currentQuery", currentQuery)
     }
 
-    // --- Filtering logic (mirrors Explore) ---
+    // Filtering Logic
     private fun applyFilters() {
         val filtered = favParks.filter { p ->
             val textMatch = currentQuery.isBlank() ||
@@ -170,13 +170,13 @@ class Favourites : AppCompatActivity() {
         }
     }
 
-    // --- Build favourites from storage ---
+    // Get favourites from storage
     private fun buildFavourites(): List<Park> =
         ParkRepository.getAll()
             .filter { FavouriteStore.getFavourites(this).contains(it.parkID) }
             .map { it.copy(isFavourite = true) }
 
-    // --- Chip builders & set derivation (same as Explore) ---
+    // Chip builders
     private fun buildActivityChips(activities: List<String>) {
         chipGroupActivities.removeAllViews()
         activities.forEachIndexed { idx, item ->
@@ -207,6 +207,7 @@ class Favourites : AppCompatActivity() {
         }
     }
 
+    // Derive Categories from list of parks
     private fun deriveActivities(parks: List<Park>): List<String> {
         val set = linkedSetOf("All")
         parks.forEach { p -> p.activities.forEach { if (it.isNotBlank()) set.add(it.trim()) } }
@@ -219,7 +220,7 @@ class Favourites : AppCompatActivity() {
         return set.toList()
     }
 
-    // --- Helpers ---
+    // Helpers
     private fun selectChipByText(group: ChipGroup, text: String?): Boolean {
         if (text.isNullOrBlank()) return false
         for (i in 0 until group.childCount) {

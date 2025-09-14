@@ -25,10 +25,10 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // --- Load data ---
+        // Load Parks Data
         val parks = ParkRepository.getAll()
 
-        // Row 1: navigation
+        // Row 1: Navigation
         val row1Items = listOf(
             CategoryItem("Explore All", R.drawable.search),
             CategoryItem("Favourites", R.drawable.favourite_button_icon)
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Row 2: Activities (no All) -> open Explore with activity chip selected
+        // Row 2: Activities -> open Explore with activity chip selected
         val activityItems = deriveActivitiesNoAll(parks).map { CategoryItem(it) }
         setupHorizontalRecycler(R.id.recyclerSection2, activityItems) { item, _ ->
             startActivity(
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        // Row 3: Features (no All) -> open Explore with feature chip selected
+        // Row 3: Features -> open Explore with feature chip selected
         val featureItems = deriveFeaturesNoAll(parks).map { CategoryItem(it) }
         setupHorizontalRecycler(R.id.recyclerSection3, featureItems) { item, _ ->
             startActivity(
@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         rv.setHasFixedSize(true)
     }
 
-    // Derive lists with "All"/blank removed
+    // Derive lists
     private fun deriveActivitiesNoAll(parks: List<Park>): List<String> =
         parks.asSequence()
             .flatMap { it.activities.asSequence() }
