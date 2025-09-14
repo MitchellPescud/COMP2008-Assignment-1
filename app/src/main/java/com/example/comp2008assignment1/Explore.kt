@@ -14,9 +14,16 @@ import com.google.android.material.appbar.MaterialToolbar
 // Shows all available categories of parks in a grid (e.g. All, Playgrounds, Sports, Favourites).
 // Clicking a category opens ParkListActivity or Favourites.
 class Explore : AppCompatActivity() {
-    private lateinit var recycler: RecyclerView
-    private lateinit var adapter: CategoryAdapter
-    private lateinit var toolbar: MaterialToolbar
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: ParkAdapter
+    private lateinit var searchView: SearchView
+    private lateinit var chipGroupActivities: ChipGroup
+    private lateinit var chipGroupFeatures: ChipGroup
+    private var allParks: List<Park> = emptyList()
+    private var currentQuery: String = ""
+    private var currentActivity: String = "All"
+    private var currentFeature: String = "All"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,8 +37,14 @@ class Explore : AppCompatActivity() {
             insets
         }
 
-        // --- Toolbar setup with back arrow ---
-        toolbar = findViewById(R.id.toolbar)
+        // Restore state if available
+        savedInstanceState?.let {
+            currentActivity = it.getString("currentActivity", "All")
+            currentFeature = it.getString("currentFeature", "All")
+        }
+
+        // --- Toolbar setup ---
+        val toolbar = findViewById<MaterialToolbar>(R.id.Navigation_Bar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -42,9 +55,11 @@ class Explore : AppCompatActivity() {
             finish()
         }
 
-        // --- RecyclerView setup for category grid ---
-        recycler = findViewById(R.id.recyclerCategories)
-        recycler.layoutManager = GridLayoutManager(this, 2)
+        // --- View lookups ---
+        searchView = findViewById(R.id.searchView)
+        chipGroupActivities = findViewById(R.id.chipGroupActivities)
+        chipGroupFeatures = findViewById(R.id.chipGroupFeatures)
+        recyclerView = findViewById(R.id.recyclerParks)
 
         // Build categories list with counts from ParkRepository
         val parks = ParkRepository.getAll()
@@ -65,35 +80,129 @@ class Explore : AppCompatActivity() {
                 }
             }
         }
-        recycler.adapter = adapter
+        recyclerView.adapter = adapter
+
+        // Load data from repository
+        allParks = ParkRepository.getAll() // Get all parks from ParkRepository
+
+        // Build chips separately
+        buildActivityChips(deriveActivities(allParks))
+        buildFeatureChips(deriveFeatures(allParks))
+
+        // Restore selected for rotation
+        chipGroupActivities.findViewWithTag<Chip>(currentActivity)?.isChecked = true
+        chipGroupFeatures.findViewWithTag<Chip>(currentFeature)?.isChecked = true
+
+        // Live text search: filter on every keystroke (case-insensitive)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = true
+            override fun onQueryTextChange(newText: String?): Boolean {
+                currentQuery = newText.orEmpty()
+                applyFilters()
+                return true
+            }
+        })
+
+        // Activity filter change
+        chipGroupActivities.setOnCheckedStateChangeListener { group, _ ->
+            val id = group.checkedChipId
+            currentActivity = group.findViewById<Chip>(id)?.text?.toString() ?: "All"
+            applyFilters()
+        }
+
+        // Feature filter change
+        chipGroupFeatures.setOnCheckedStateChangeListener { group, _ ->
+            val id = group.checkedChipId
+            currentFeature = group.findViewById<Chip>(id)?.text?.toString() ?: "All"
+            applyFilters()
+        }
+
+        // Initial list
+        applyFilters()
     }
 
-    // Build unique categories (activities + features) and count how many parks belong to each
-    private fun deriveCategoriesWithCounts(parks: List<Park>): List<CategoryItem> {
-        val counts = linkedMapOf<String, Int>()
-        counts["All"] = parks.size // "All" always includes all parks
+    override fun onResume() {
+        super.onResume()
 
-        val unique = linkedSetOf<String>()
-        parks.forEach { p ->
-            p.activities.forEach { if (it.isNotBlank()) unique.add(it.trim()) }
-            p.features.forEach { if (it.isNotBlank()) unique.add(it.trim()) }
+        // Refresh list to reflect any favourite changes made elsewhere
+        applyFilters()
+    }
+
+    // --- Filtering logic ---
+
+    // Applies current search + category filter, merges favourite state, and updates the adapter
+    private fun applyFilters() {
+        val favs = FavouriteStore.getFavourites(this)
+
+        val filtered = allParks.filter { p ->
+            // Text match
+            val textMatch = currentQuery.isBlank() ||
+                    p.name.contains(currentQuery, ignoreCase = true) ||
+                    p.location.contains(currentQuery, ignoreCase = true) ||
+                    p.activities.any { it.contains(currentQuery, ignoreCase = true) } ||
+                    p.features.any { it.contains(currentQuery, ignoreCase = true) }
+
+            // Activity match (if not “All”, require park to contain that activity)
+            val activityMatch = (currentActivity == "All") ||
+                    p.activities.any { it.equals(currentActivity, ignoreCase = true) }
+
+            // Feature match (if not “All”, require park to contain that feature)
+            val featureMatch = (currentFeature == "All") ||
+                    p.features.any { it.equals(currentFeature, ignoreCase = true) }
+
+            textMatch && activityMatch && featureMatch
         }
+            .map { it.copy(isFavourite = favs.contains(it.parkID)) }
 
-        // Count how many parks belong to each category
-        unique.forEach { cat ->
-            counts[cat] = parks.count { p ->
-                p.activities.any { it.equals(cat, true) } ||
-                        p.features.any { it.equals(cat, true) }
+        adapter.setItems(filtered)
+    }
+
+    // ---- Chip builders & set derivation ----
+    private fun buildActivityChips(activities: List<String>) {
+        chipGroupActivities.removeAllViews()
+        activities.forEachIndexed { idx, item ->
+            val chip = Chip(this).apply {
+                id = View.generateViewId()
+                text = item
+                tag = item
+                isCheckable = true
+                isCheckedIconVisible = false
             }
+            chipGroupActivities.addView(chip)
+            if (idx == 0) chip.isChecked = true // “All”
         }
+    }
 
-        // Convert into list of CategoryItems
-        return counts.map { (name, count) ->
-            CategoryItem(
-                name = name,
-                count = count,
-                iconRes = android.R.drawable.ic_menu_myplaces // built-in system icon
-            )
+    private fun buildFeatureChips(features: List<String>) {
+        chipGroupFeatures.removeAllViews()
+        features.forEachIndexed { idx, item ->
+            val chip = Chip(this).apply {
+                id = View.generateViewId()
+                text = item
+                tag = item
+                isCheckable = true
+                isCheckedIconVisible = false
+            }
+            chipGroupFeatures.addView(chip)
+            if (idx == 0) chip.isChecked = true // “All”
         }
+    }
+
+    private fun deriveActivities(parks: List<Park>): List<String> {
+        val set = linkedSetOf("All")
+        parks.forEach { p -> p.activities.forEach { if (it.isNotBlank()) set.add(it.trim()) } }
+        return set.toList()
+    }
+
+    private fun deriveFeatures(parks: List<Park>): List<String> {
+        val set = linkedSetOf("All")
+        parks.forEach { p -> p.features.forEach { if (it.isNotBlank()) set.add(it.trim()) } }
+        return set.toList()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("currentActivity", currentActivity)
+        outState.putString("currentFeature", currentFeature)
     }
 }
