@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<!-- Layout for a single category card in the Explore grid -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card"
     android:layout_width="match_parent"
@@ -10,6 +13,7 @@
     android:background="?android:attr/selectableItemBackground"
     android:layout_margin="8dp">
 
+    <!-- Category icon -->
     <ImageView
         android:id="@+id/iconCategory"
         android:layout_width="48dp"
@@ -17,6 +21,7 @@
         android:src="@android:drawable/ic_menu_myplaces"
         app:tint="?attr/colorPrimary"/>
 
+    <!-- Category name -->
     <TextView
         android:id="@+id/textCategory"
         android:layout_width="wrap_content"
@@ -25,6 +30,7 @@
         android:text="Category"
         android:textStyle="bold" />
 
+    <!-- Park count -->
     <TextView
         android:id="@+id/textCount"
         android:layout_width="wrap_content"

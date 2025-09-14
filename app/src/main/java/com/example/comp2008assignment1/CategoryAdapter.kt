@@ -7,9 +7,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
+
+// RecyclerView Adapter for the Explore screen categories
+// Inflates item_category.xml for each category and binds data
 class CategoryAdapter(
     private val items: List<CategoryItem>,
-    private val onClick: (CategoryItem) -> Unit
+    private val onClick: (CategoryItem) -> Unit // Callback on click
 ) : RecyclerView.Adapter<CategoryAdapter.Holder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -21,6 +24,7 @@ class CategoryAdapter(
 
     override fun getItemCount(): Int = items.size
 
+    // ViewHolder holds one inflated item_category.xml view
     class Holder(
         view: View,
         private val onClick: (CategoryItem) -> Unit
@@ -29,6 +33,7 @@ class CategoryAdapter(
         private val name: TextView = view.findViewById(R.id.textCategory)
         private val count: TextView = view.findViewById(R.id.textCount)
 
+        // Bind a CategoryItem into the view
         fun bind(item: CategoryItem) {
             icon.setImageResource(item.iconRes)
             name.text = item.name
