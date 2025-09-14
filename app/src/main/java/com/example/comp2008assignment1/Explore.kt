@@ -42,6 +42,12 @@ class Explore : AppCompatActivity() {
             insets
         }
 
+        // Restore state if available
+        savedInstanceState?.let {
+            currentActivity = it.getString("currentActivity", "All")
+            currentFeature = it.getString("currentFeature", "All")
+        }
+
         // --- Toolbar setup ---
         val toolbar = findViewById<MaterialToolbar>(R.id.Navigation_Bar)
         setSupportActionBar(toolbar)
@@ -78,6 +84,10 @@ class Explore : AppCompatActivity() {
         // Build chips separately
         buildActivityChips(deriveActivities(allParks))
         buildFeatureChips(deriveFeatures(allParks))
+
+        // Restore selected for rotation
+        chipGroupActivities.findViewWithTag<Chip>(currentActivity)?.isChecked = true
+        chipGroupFeatures.findViewWithTag<Chip>(currentFeature)?.isChecked = true
 
         // Live text search: filter on every keystroke (case-insensitive)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -150,6 +160,7 @@ class Explore : AppCompatActivity() {
             val chip = Chip(this).apply {
                 id = View.generateViewId()
                 text = item
+                tag = item
                 isCheckable = true
                 isCheckedIconVisible = false
             }
@@ -164,6 +175,7 @@ class Explore : AppCompatActivity() {
             val chip = Chip(this).apply {
                 id = View.generateViewId()
                 text = item
+                tag = item
                 isCheckable = true
                 isCheckedIconVisible = false
             }
@@ -182,5 +194,11 @@ class Explore : AppCompatActivity() {
         val set = linkedSetOf("All")
         parks.forEach { p -> p.features.forEach { if (it.isNotBlank()) set.add(it.trim()) } }
         return set.toList()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("currentActivity", currentActivity)
+        outState.putString("currentFeature", currentFeature)
     }
 }
