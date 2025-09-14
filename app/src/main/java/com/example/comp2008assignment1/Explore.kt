@@ -23,10 +23,12 @@ class Explore : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ParkAdapter
     private lateinit var searchView: SearchView
-    private lateinit var chipGroup: ChipGroup
+    private lateinit var chipGroupActivities: ChipGroup
+    private lateinit var chipGroupFeatures: ChipGroup
     private var allParks: List<Park> = emptyList()
     private var currentQuery: String = ""
-    private var currentCategory: String = "All"
+    private var currentActivity: String = "All"
+    private var currentFeature: String = "All"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +55,8 @@ class Explore : AppCompatActivity() {
 
         // --- View lookups ---
         searchView = findViewById(R.id.searchView)
-        chipGroup = findViewById(R.id.chipGroup)
+        chipGroupActivities = findViewById(R.id.chipGroupActivities)
+        chipGroupFeatures = findViewById(R.id.chipGroupFeatures)
         recyclerView = findViewById(R.id.recyclerParks)
 
         // --- RecyclerView setup for displaying parks ---
@@ -72,8 +75,9 @@ class Explore : AppCompatActivity() {
         // Load data from repository
         allParks = ParkRepository.getAll() // Get all parks from ParkRepository
 
-        // Build chips from categories present in data
-        buildCategoryChips(deriveCategories(allParks))
+        // Build chips separately
+        buildActivityChips(deriveActivities(allParks))
+        buildFeatureChips(deriveFeatures(allParks))
 
         // Live text search: filter on every keystroke (case-insensitive)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -85,10 +89,17 @@ class Explore : AppCompatActivity() {
             }
         })
 
-        // Live category filter: chips are single-select; "All" shows everything
-        chipGroup.setOnCheckedStateChangeListener { group,  _ ->
-            val checkedId = group.checkedChipId
-            currentCategory = group.findViewById<Chip>(checkedId)?.text?.toString() ?: "All"
+        // Activity filter change
+        chipGroupActivities.setOnCheckedStateChangeListener { group, _ ->
+            val id = group.checkedChipId
+            currentActivity = group.findViewById<Chip>(id)?.text?.toString() ?: "All"
+            applyFilters()
+        }
+
+        // Feature filter change
+        chipGroupFeatures.setOnCheckedStateChangeListener { group, _ ->
+            val id = group.checkedChipId
+            currentFeature = group.findViewById<Chip>(id)?.text?.toString() ?: "All"
             applyFilters()
         }
 
@@ -110,55 +121,66 @@ class Explore : AppCompatActivity() {
         val favs = FavouriteStore.getFavourites(this)
 
         val filtered = allParks.filter { p ->
-            // Text match across name, location, activities, features
+            // Text match
             val textMatch = currentQuery.isBlank() ||
                     p.name.contains(currentQuery, ignoreCase = true) ||
                     p.location.contains(currentQuery, ignoreCase = true) ||
                     p.activities.any { it.contains(currentQuery, ignoreCase = true) } ||
-                    p.features.any {
-                        it.contains(currentQuery, ignoreCase = true)
-                    }
+                    p.features.any { it.contains(currentQuery, ignoreCase = true) }
 
-            // Category match across activities OR features (treat either as a "category")
-            val catMatch = (currentCategory == "All") ||
-                    p.activities.any { it.equals(currentCategory, ignoreCase = true) } ||
-                    p.features.any {
-                        it.equals(currentCategory, ignoreCase = true)
-                    }
+            // Activity match (if not “All”, require park to contain that activity)
+            val activityMatch = (currentActivity == "All") ||
+                    p.activities.any { it.equals(currentActivity, ignoreCase = true) }
 
-            textMatch && catMatch
+            // Feature match (if not “All”, require park to contain that feature)
+            val featureMatch = (currentFeature == "All") ||
+                    p.features.any { it.equals(currentFeature, ignoreCase = true) }
+
+            textMatch && activityMatch && featureMatch
         }
-            // Copy list so each item reflects favourite state
             .map { it.copy(isFavourite = favs.contains(it.parkID)) }
 
         adapter.setItems(filtered)
-        }
+    }
 
-    // Derives a unique, ordered category list from parks' activities + features
-    private fun deriveCategories(parks: List<Park>): List<String> {
-        // First item is always "All"
+    // ---- Chip builders & set derivation ----
+    private fun buildActivityChips(activities: List<String>) {
+        chipGroupActivities.removeAllViews()
+        activities.forEachIndexed { idx, item ->
+            val chip = Chip(this).apply {
+                id = View.generateViewId()
+                text = item
+                isCheckable = true
+                isCheckedIconVisible = false
+            }
+            chipGroupActivities.addView(chip)
+            if (idx == 0) chip.isChecked = true // “All”
+        }
+    }
+
+    private fun buildFeatureChips(features: List<String>) {
+        chipGroupFeatures.removeAllViews()
+        features.forEachIndexed { idx, item ->
+            val chip = Chip(this).apply {
+                id = View.generateViewId()
+                text = item
+                isCheckable = true
+                isCheckedIconVisible = false
+            }
+            chipGroupFeatures.addView(chip)
+            if (idx == 0) chip.isChecked = true // “All”
+        }
+    }
+
+    private fun deriveActivities(parks: List<Park>): List<String> {
         val set = linkedSetOf("All")
-
-        parks.forEach { p ->
-            p.activities.forEach { if (it.isNotBlank()) set.add(it.trim()) }
-            p.features.forEach { if (it.isNotBlank()) set.add(it.trim()) }
-        }
-
+        parks.forEach { p -> p.activities.forEach { if (it.isNotBlank()) set.add(it.trim()) } }
         return set.toList()
     }
 
-    // Creates a chip for each category and adds it to the ChipGroup
-    private fun buildCategoryChips(categories: List<String>) {
-        chipGroup.removeAllViews()
-        categories.forEachIndexed { idx, cat ->
-            val chip = Chip(this).apply {
-                id = View.generateViewId()
-                text = cat
-                isCheckable = true // Enable selection behaviour
-                isCheckedIconVisible = false
-            }
-            chipGroup.addView(chip)
-            if (idx == 0) chip.isChecked = true // "All" preselected
-        }
+    private fun deriveFeatures(parks: List<Park>): List<String> {
+        val set = linkedSetOf("All")
+        parks.forEach { p -> p.features.forEach { if (it.isNotBlank()) set.add(it.trim()) } }
+        return set.toList()
     }
 }
