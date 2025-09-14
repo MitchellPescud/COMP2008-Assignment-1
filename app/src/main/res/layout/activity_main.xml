@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -17,81 +18,105 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Centred Title -->
         <TextView
             android:id="@+id/toolbarTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/Title"
             android:textColor="?attr/colorOnPrimary"
-            android:textSize="30sp"
+            android:textSize="22sp"
             android:textStyle="bold"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"/>
     </com.google.android.material.appbar.MaterialToolbar>
 
-    <!-- Welcome Photo -->
+    <!-- Header Image -->
     <ImageView
-        android:id="@+id/welcomeImage"
+        android:id="@+id/headerImage"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="200dp"
         android:scaleType="centerCrop"
-        android:contentDescription="@string/welcome_photo"
-        android:src="@drawable/welcome_photo"
+        app:srcCompat="@drawable/welcome_photo"
         app:layout_constraintTop_toBottomOf="@id/Navigation_Bar"
-        app:layout_constraintBottom_toTopOf="@id/welcomeText"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_chainStyle="spread"
-        app:layout_constraintVertical_weight="3" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Welcome Text -->
-    <TextView
-        android:id="@+id/welcomeText"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="@string/Welcome_Paragraph"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/welcomeImage"
-        app:layout_constraintBottom_toTopOf="@id/buttonRow"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_weight="2" />
-
-    <!-- Button Row -->
+    <!-- Weighted container for 3 sections -->
     <LinearLayout
-        android:id="@+id/buttonRow"
+        android:id="@+id/sectionsContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:padding="10dp"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/welcomeText"
+        android:orientation="vertical"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/headerImage"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_weight="1.5">
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Explore -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnExplore"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <!-- Section 1 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="Explore" />
+            android:orientation="vertical">
 
-        <Space
-            android:layout_width="12dp"
-            android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Main"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:padding="4dp"/>
 
-        <!-- Favourites -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnFavourites"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerSection1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <!-- Section 2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="Favourites" />
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Activities"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:padding="4dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerSection2"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <!-- Section 3 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Features"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:padding="4dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerSection3"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,6 +20,11 @@ import com.google.android.material.chip.ChipGroup
 // Lets the user favourite / un-favourite them.
 class Explore : AppCompatActivity() {
 
+    companion object {
+        const val EXTRA_ACTIVITY_FILTER = "extra_activity_filter"
+        const val EXTRA_FEATURE_FILTER  = "extra_feature_filter"
+    }
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ParkAdapter
     private lateinit var searchView: SearchView
@@ -59,70 +64,67 @@ class Explore : AppCompatActivity() {
             finish() // Close Explore activity
         }
 
-        // --- View lookups ---
+// --- View lookups ---
         searchView = findViewById(R.id.searchView)
         chipGroupActivities = findViewById(R.id.chipGroupActivities)
-        chipGroupFeatures = findViewById(R.id.chipGroupFeatures)
-        recyclerView = findViewById(R.id.recyclerParks)
+        chipGroupFeatures   = findViewById(R.id.chipGroupFeatures)
+        recyclerView        = findViewById(R.id.recyclerParks)
 
-        // --- RecyclerView setup for displaying parks ---
-        recyclerView.layoutManager = LinearLayoutManager(this) // Vertical scrolling list
+        recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = ParkAdapter { park ->
-            if (park.isFavourite) {
-                // User just favourited → show toast
+            if (park.isFavourite)
                 Toast.makeText(this, "You favourited ${park.name}", Toast.LENGTH_SHORT).show()
-            } else {
-                // User un-favourited → show toast
+            else
                 Toast.makeText(this, "You unfavourited ${park.name}", Toast.LENGTH_SHORT).show()
-            }
         }
         recyclerView.adapter = adapter
 
-        // Load data from repository
-        allParks = ParkRepository.getAll() // Get all parks from ParkRepository
+        allParks = ParkRepository.getAll()
 
-        // Build chips separately
+        // 1) Start with defaults or rotation restore
+        savedInstanceState?.let {
+            currentActivity = it.getString("currentActivity", "All")
+            currentFeature  = it.getString("currentFeature",  "All")
+        }
+
+        // 2) Intents from MainActivity take precedence if present
+        intent.getStringExtra(EXTRA_ACTIVITY_FILTER)?.let { currentActivity = it }
+        intent.getStringExtra(EXTRA_FEATURE_FILTER )?.let { currentFeature  = it }
+
+        // Build chips (these include "All" at index 0)
         buildActivityChips(deriveActivities(allParks))
         buildFeatureChips(deriveFeatures(allParks))
 
-        // Restore selected for rotation
-        chipGroupActivities.findViewWithTag<Chip>(currentActivity)?.isChecked = true
-        chipGroupFeatures.findViewWithTag<Chip>(currentFeature)?.isChecked = true
+        // Select the requested chips (fallback to "All" if not found)
+        selectChipByText(chipGroupActivities, currentActivity) ||
+                selectChipByText(chipGroupActivities, "All")
+        selectChipByText(chipGroupFeatures, currentFeature) ||
+                selectChipByText(chipGroupFeatures, "All")
 
-        // Live text search: filter on every keystroke (case-insensitive)
+        // Listeners (unchanged)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean = true
+            override fun onQueryTextSubmit(query: String?) = true
             override fun onQueryTextChange(newText: String?): Boolean {
                 currentQuery = newText.orEmpty()
                 applyFilters()
                 return true
             }
         })
-
-        // Activity filter change
         chipGroupActivities.setOnCheckedStateChangeListener { group, _ ->
             val id = group.checkedChipId
             currentActivity = group.findViewById<Chip>(id)?.text?.toString() ?: "All"
             applyFilters()
         }
-
-        // Feature filter change
         chipGroupFeatures.setOnCheckedStateChangeListener { group, _ ->
             val id = group.checkedChipId
             currentFeature = group.findViewById<Chip>(id)?.text?.toString() ?: "All"
             applyFilters()
         }
 
-        // Initial list
         applyFilters()
     }
 
-    override fun onResume() {
-        super.onResume()
 
-        // Refresh list to reflect any favourite changes made elsewhere
-        applyFilters()
-    }
 
     // --- Filtering logic ---
 
@@ -196,9 +198,24 @@ class Explore : AppCompatActivity() {
         return set.toList()
     }
 
+
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString("currentActivity", currentActivity)
         outState.putString("currentFeature", currentFeature)
+    }
+
+    // Helper to select a chip by its visible text (case-insensitive).
+    private fun selectChipByText(group: ChipGroup, text: String?): Boolean {
+        if (text.isNullOrBlank()) return false
+        for (i in 0 until group.childCount) {
+            val chip = group.getChildAt(i) as? Chip ?: continue
+            if (chip.text.toString().equals(text, ignoreCase = true)) {
+                chip.isChecked = true
+                return true
+            }
+        }
+        return false
     }
 }
