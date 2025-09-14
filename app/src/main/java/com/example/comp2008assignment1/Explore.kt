@@ -64,7 +64,7 @@ class Explore : AppCompatActivity() {
             finish() // Close Explore activity
         }
 
-// --- View lookups ---
+        // --- View lookups ---
         searchView = findViewById(R.id.searchView)
         chipGroupActivities = findViewById(R.id.chipGroupActivities)
         chipGroupFeatures   = findViewById(R.id.chipGroupFeatures)
@@ -197,7 +197,6 @@ class Explore : AppCompatActivity() {
         parks.forEach { p -> p.features.forEach { if (it.isNotBlank()) set.add(it.trim()) } }
         return set.toList()
     }
-
 
 
     override fun onSaveInstanceState(outState: Bundle) {
