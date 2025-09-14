@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import android.content.Intent
+import com.google.android.material.imageview.ShapeableImageView
 
 // Adapter to handle displaying a list of Park objects inside a RecyclerView
 // Responsible for binding data to item views and handling interactions (favourite button)
@@ -63,6 +65,7 @@ class ParkAdapter(
     ) : RecyclerView.ViewHolder(itemView) {
 
         // UI elements inside item_park.xml
+        private val parkImage: ShapeableImageView = itemView.findViewById(R.id.imagePark)
         private val name: TextView = itemView.findViewById(R.id.textName)
         private val location: TextView = itemView.findViewById(R.id.textLocation)
         private val activities: TextView = itemView.findViewById(R.id.textActivities)
@@ -75,6 +78,20 @@ class ParkAdapter(
 
             // Ensure isFavourite is synced with persisted storage (e.g., SharedPreferences)
             park.isFavourite = FavouriteStore.isFavourite(ctx, park.parkID)
+
+            // Try to resolve park image using parkID
+            val imageId = ctx.resources.getIdentifier(
+                park.parkID.lowercase(), // assumes drawable names are lowercase
+                "drawable",
+                ctx.packageName
+            )
+
+            // If image exists, use it, otherwise fallback to sample
+            if (imageId != 0) {
+                parkImage.setImageResource(imageId)
+            } else {
+                parkImage.setImageResource(R.drawable.sample_park) // fallback/default
+            }
 
             // Set name and location text
             name.text = park.name
@@ -112,6 +129,14 @@ class ParkAdapter(
 
                 // Trigger callback so Activity/Fragment can react (e.g., show Toast)
                 onFavouriteClick(park)
+            }
+
+            // Handle clicks anywhere else on the item
+            itemView.setOnClickListener {
+                val intent = Intent(ctx, ParkDetailedView::class.java).apply {
+                    putExtra("PARK_ID", park.parkID) // pass only the ID
+                }
+                ctx.startActivity(intent)
             }
         }
     }

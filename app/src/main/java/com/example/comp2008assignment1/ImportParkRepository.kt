@@ -8,7 +8,6 @@ import java.io.InputStreamReader
 // Repository object that manages the list of parks
 // Responsible for importing parks from the assets file (parks.txt)
 // Provides access to the in-memory list of Park objects
-
 object ParkRepository {
     private const val TAG = "ParkRepository"       // Tag for logging
     private const val FILE_NAME = "parks.txt"      // Asset file name
@@ -22,37 +21,38 @@ object ParkRepository {
     /**
      * Initialise repository by loading parks from assets/parks.txt
      * This should typically be called once (e.g., in Application.onCreate())
+     *
+     * Line format (pipes with optional spaces around them):
+     * id | name | location | activities | features | description | rating
      */
     fun init(app: Application) {
-        // Prevent reloading if already initialised
         if (loaded) return
         try {
-            // Open parks.txt from assets folder
             app.assets.open(FILE_NAME).use { input ->
                 BufferedReader(InputStreamReader(input)).useLines { lines ->
-                    lines.forEach { raw ->
+                    lines.forEachIndexed { idx, raw ->
                         val line = raw.trim()
 
                         // Ignore blank lines or comment lines starting with "#"
-                        if (line.isEmpty() || line.startsWith("#")) return@forEach
+                        if (line.isEmpty() || line.startsWith("#")) return@forEachIndexed
 
-                        // Expect line format: id | name | location | activities | features
-                        val parts = line.split("|", limit = 5).map { it.trim() }
+                        // Expect up to 7 fields: id|name|location|activities|features|[description]|[rating]
+                        val parts = line.split("|", limit = 7).map { it.trim() }
 
-                        // Skip malformed lines that don't have 5 fields
+                        // Must have at least the first 5 fields
                         if (parts.size < 5) {
-                            Log.w(TAG, "Skipping malformed line: $line")
-                            return@forEach
+                            Log.w(TAG, "Skipping malformed line ${idx + 1}: $line")
+                            return@forEachIndexed
                         }
 
-                        // Extract fields from the line
                         val parkID = parts[0]
                         val name = parts[1]
                         val location = parts[2]
-                        val activities = splitList(parts[3])   // Comma-separated values → List<String>
-                        val features = splitList(parts[4])     // Comma-separated values → List<String>
+                        val activities = splitList(parts[3])   // "a, b, c" -> ["a","b","c"]
+                        val features = splitList(parts[4])
+                        val description = parts.getOrNull(5)?.trim().orEmpty()
+                        val rating = parts.getOrNull(6)?.toDoubleOrNull() ?: 0.0
 
-                        // Create Park object and add to in-memory list
                         parks.add(
                             Park(
                                 parkID = parkID,
@@ -60,19 +60,18 @@ object ParkRepository {
                                 location = location,
                                 activities = activities,
                                 features = features,
-                                isFavourite = false // Default when first loaded
+                                description = description,
+                                rating = rating,
+                                isFavourite = false
                             )
                         )
                     }
                 }
             }
 
-            // Mark as loaded to prevent duplicate imports
             loaded = true
             Log.d(TAG, "Loaded ${parks.size} parks from $FILE_NAME")
-
         } catch (t: Throwable) {
-            // Log error if reading/parsing fails
             Log.e(TAG, "Failed to load $FILE_NAME: ${t.message}", t)
         }
     }
@@ -80,8 +79,13 @@ object ParkRepository {
     // Returns the full list of loaded parks
     fun getAll(): List<Park> = parks
 
-     // Splits a comma-separated string into a cleaned List<String>
-     // Removes blanks and trims spaces around entries
+    // Returns a single Park by ID (or null if not found)
+    fun getById(parkID: String): Park? {
+        return parks.find { it.parkID == parkID }
+    }
+
+    // Splits a comma-separated string into a cleaned List<String>
+    // Removes blanks and trims spaces around entries
     private fun splitList(field: String): List<String> =
         if (field.isBlank()) emptyList()
         else field.split(",")
